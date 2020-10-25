@@ -16,6 +16,7 @@ import Shared exposing (init, subscriptions)
 import Spa.Document exposing (Document)
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
+import Url
 
 
 type alias Params =
@@ -221,5 +222,5 @@ viewLink model =
                         text "error"
 
             Success url ->
-                link [ Font.color (rgb255 52 152 219) ] { label = text (apiAddress ++ "/" ++ url.id), url = apiAddress ++ "/" ++ url.id }
+                link [ Font.color (rgb255 52 152 219) ] { label = text (Url.toString model.url.rawUrl ++ url.id), url = Url.toString model.url.rawUrl ++ url.id }
         )
