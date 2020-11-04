@@ -2,4 +2,4 @@ module Api.Api exposing (apiAddress)
 
 apiAddress : String
 apiAddress =
-    "http://localhost:8080"
+    "https://3nt3.de/api/"
