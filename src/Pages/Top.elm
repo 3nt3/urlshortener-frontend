@@ -148,57 +148,72 @@ onEnter msg =
         )
 
 
+viewProtocolHint : String -> Element Msg
+viewProtocolHint input =
+    el [ centerX ] (text ("did you mean http://" ++ input ++ "?"))
+
+
 viewForm : Model -> Element Msg
 viewForm model =
-    row
-        [ centerX
-        , spacing 10
-        ]
-        [ Input.text
-            (inputStyle
-                ++ (if String.isEmpty model.urlInput then
-                        []
+    column [ centerX, spacing 10 ]
+        [ if String.isEmpty model.urlInput then
+            text ""
+
+          else if not (String.startsWith "http://" model.urlInput) && not (String.startsWith "https://" model.urlInput) then
+            viewProtocolHint model.urlInput
+
+          else
+            text ""
+        , row
+            [ centerX
+            , spacing 10
+            ]
+            [ Input.text
+                (inputStyle
+                    ++ (if String.isEmpty model.urlInput then
+                            []
+
+                        else
+                            [ onEnter Shorten ]
+                       )
+                )
+                { label = Input.labelHidden "URL"
+                , placeholder = Just (Input.placeholder [] (text ""))
+                , onChange = UrlInput
+                , text = model.urlInput
+                }
+            , Input.button
+                ([ Background.color
+                    (if String.isEmpty model.urlInput then
+                        rgb255 127 140 141
+
+                     else
+                        rgb255 46 204 113
+                    )
+                 ]
+                    ++ buttonStyle
+                )
+                { onPress =
+                    if String.isEmpty model.urlInput then
+                        Nothing
 
                     else
-                        [ onEnter Shorten ]
-                   )
-            )
-            { label = Input.labelHidden "URL"
-            , placeholder = Just (Input.placeholder [] (text ""))
-            , onChange = UrlInput
-            , text = model.urlInput
-            }
-        , Input.button
-            ([ Background.color
-                (if String.isEmpty model.urlInput then
-                    rgb255 127 140 141
+                        Just Shorten
+                , label =
+                    case model.urlData of
+                        Loading ->
+                            text "Loading..."
 
-                 else
-                    rgb255 46 204 113
-                )
-             ]
-                ++ buttonStyle
-            )
-            { onPress =
-                if String.isEmpty model.urlInput then
-                    Nothing
+                        NotAsked ->
+                            text "shorten!"
 
-                else
-                    Just Shorten
-            , label =
-                case model.urlData of
-                    Loading ->
-                        text "Loading..."
+                        Failure _ ->
+                            text "error."
 
-                    NotAsked ->
-                        text "shorten!"
-
-                    Failure _ ->
-                        text "error."
-
-                    Success _ ->
-                        text "shorten!"
-            }
+                        Success _ ->
+                            text "shorten!"
+                }
+            ]
         ]
 
 
